@@ -1,0 +1,60 @@
+<html>
+<head>
+<script src="d3.min.js"></script>
+<script src="stckr.js"></script>
+<style>
+body {
+  margin: 1rem;
+  font-family: Tahoma;
+}
+
+.stacker {
+  width: 400px;
+  height: 300px;
+  background-color: #EEE;
+  position: relative;
+  overflow-y: auto;
+}
+
+.track {
+  box-sizing: border-box;
+  border-bottom: 1px solid #234;
+  text-align: center;
+  background: #987;
+  position: absolute;
+  opacity: 0.75;
+}
+
+.active-track {
+  background-color: #F80;
+}
+
+</style>
+</head>
+<body>
+  <p>This is a stacked-grid test. Drag each track up/down to swap their positions.</p>
+  <button onclick="toggle()" id="btn">Disable Stckr</button>
+  <div class="stacker">
+    <div class="track">1</div>
+    <div class="track">2</div>
+    <div class="track">3</div>
+    <div class="track">4</div>
+    <div class="track">5</div>
+  </div>
+</body>
+<script>
+var stacker = new Stacker( d3.select('.stacker'))
+stacker.init();
+stacker.enable();
+
+function toggle() {
+  if (stacker.enabled) {
+    stacker.disable();
+    d3.select('#btn').text('Enable Stckr');
+  } else {
+    stacker.enable();
+    d3.select('#btn').text('Disable Stckr');
+  }
+};
+</script>
+</html>
