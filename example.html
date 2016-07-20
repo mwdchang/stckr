@@ -35,16 +35,12 @@ body {
   <p>This is a stacked-grid test. Drag each track up/down to swap their positions.</p>
   <button onclick="toggle()" id="btn">Disable Stckr</button>
   <div class="stacker">
-    <div class="track">1</div>
-    <div class="track">2</div>
-    <div class="track">3</div>
-    <div class="track">4</div>
-    <div class="track">5</div>
   </div>
 </body>
 <script>
 var stacker = new Stacker( d3.select('.stacker'))
-stacker.init();
+stacker.addTrack(1);
+stacker.addTrack(2);
 stacker.enable();
 
 function toggle() {

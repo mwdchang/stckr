@@ -12,15 +12,22 @@ function Stacker(element) {
   this.enabled = false;
 }
 
+/**
+ * Returns the container height
+ */
 Stacker.prototype.height = function() {
   return parseInt(this.element.style('height'), 10);
 };
 
+/**
+ * Returns the container width
+ */
 Stacker.prototype.width = function() {
   return parseInt(this.element.style('width'), 10);
 };
 
 
+/*
 Stacker.prototype.generate = function(numTracks) {
   this.stack = [];
   for (var i=0; i < numTracks; ++i) {
@@ -29,11 +36,11 @@ Stacker.prototype.generate = function(numTracks) {
       order: i,
       dy: 0,
       active: false,
-      // weight: 1 + i
       weight: 1.0
     });
   }
 };
+*/
 
 /**
  * Recalulcate the next position
@@ -60,31 +67,59 @@ Stacker.prototype.recalc = function() {
   }
 };
 
+Stacker.prototype.modifyTrackWeight = function(id, weight) {
+  this.disable();
+  var stack = this.stack.filter(function(d) { return d.trackId === id; })[0];
+  console.log('s', stack);
+  stack.weight = weight;
+  this._bind();
+  this.enable();
+};
 
-Stacker.prototype.init = function() {
-  var height = this.height();
-  var width = this.width();
-  console.log('wh', width, height);
+Stacker.prototype.addTrack = function(labelStr) {
+  this.disable();
+  var maxId = 0;
+  for (var i=0; i < this.stack.length; i++) {
+    if (this.stack[i].trackId > maxId) {
+      maxId = this.stack[i].trackId;
+    }
+  }
+  this.stack.push({
+    trackId: ++maxId,
+    order: this.stack.length,
+    dy: 0,
+    active: false,
+    weight: 1.0
+  });
+  this.element.append('div').classed('track', true).text(labelStr || null);
+  this._bind();
+  this.enable();
+};
 
+Stacker.prototype.removeTrack = function(id) {
+};
+
+
+Stacker.prototype._bind = function() {
   var tracks = this.element.selectAll('.track');
-
-  this.generate(tracks.size());
+  var width = this.width();
   this.recalc();
-
   tracks.data(this.stack)
     .style('top', function(d) { return d.sy; })
     .style('height', function(d) { return d.height; })
-    .style('width', width+ 'px');
-};
+    .style('width', width + 'px');
+}
+
+
 
 
 Stacker.prototype.disable = function() {
   var tracks = this.element.selectAll('.track');
-  var cancel = d3.behavior.drag()
+  var cancelFn = d3.behavior.drag()
     .on('dragstart', null)
     .on('drag', null)
     .on('dragend', null);
-  tracks.call(cancel);
+  tracks.call(cancelFn);
   this.enabled = false;
 }
 
@@ -96,7 +131,6 @@ Stacker.prototype.enable = function() {
     .on('dragstart', function(d) {
       d.active = true;
       d3.select(this).classed('active-track', true);
-      console.log('drag started...');
     })
     .on('drag', function(d) {
       var ey = d3.event.dy;
@@ -104,7 +138,6 @@ Stacker.prototype.enable = function() {
       d3.select(this).style('-webkit-transform', 'translate(' + 0 + 'px,' + d.dy + 'px)')
         .style('z-index', 10);
       _this.reorder();
-
     })
     .on('dragend', function(d) {
       d.dy = 0;
