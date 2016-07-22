@@ -3,44 +3,29 @@
  * interactions
  *
  * TODO:
- * - max container (scroll)
+ * - animation
+ * - callback for switching order
+ * - contaier resize
+ * - (config) drag handle
+ * - (config) adaptable number of stacks
  */
 function Stacker(element) {
   this.element = element;
   this.stack = [];
   this.baseHeight = 0;
   this.enabled = false;
+
+  /*** Helper functions ***/
+  this.getById = (id)=> {
+    return this.stack.find((t)=> { return t.trackId === id; });
+  };
+  this.getByOrder = (i)=> {
+    return this.stack.find((t)=> { return t.order === i; });
+  };
+  this.height = ()=> { return parseInt(this.element.style('height'), 10); };
+  this.width = ()=> { return parseInt(this.element.style('width'), 10); };
 }
 
-/**
- * Returns the container height
- */
-Stacker.prototype.height = function() {
-  return parseInt(this.element.style('height'), 10);
-};
-
-/**
- * Returns the container width
- */
-Stacker.prototype.width = function() {
-  return parseInt(this.element.style('width'), 10);
-};
-
-
-/*
-Stacker.prototype.generate = function(numTracks) {
-  this.stack = [];
-  for (var i=0; i < numTracks; ++i) {
-    this.stack.push({
-      trackId: i,
-      order: i,
-      dy: 0,
-      active: false,
-      weight: 1.0
-    });
-  }
-};
-*/
 
 /**
  * Recalulcate the next position
@@ -67,15 +52,19 @@ Stacker.prototype.recalc = function() {
   }
 };
 
+/**
+ * Modify the weight of a single track by track id
+ */
 Stacker.prototype.modifyTrackWeight = function(id, weight) {
   this.disable();
-  var stack = this.stack.filter(function(d) { return d.trackId === id; })[0];
-  console.log('s', stack);
+  let stack = this.getById(id);
   stack.weight = weight;
   this._bind();
   this.enable();
 };
 
+/**
+ * Add a new track to the bottom of the stack*/
 Stacker.prototype.addTrack = function(labelStr) {
   this.disable();
   var maxId = 0;
@@ -100,6 +89,9 @@ Stacker.prototype.removeTrack = function(id) {
 };
 
 
+/**
+ * Rebinds the stack data structure to the DOM
+ */
 Stacker.prototype._bind = function() {
   var tracks = this.element.selectAll('.track');
   var width = this.width();
@@ -108,9 +100,7 @@ Stacker.prototype._bind = function() {
     .style('top', function(d) { return d.sy; })
     .style('height', function(d) { return d.height; })
     .style('width', width + 'px');
-}
-
-
+};
 
 
 Stacker.prototype.disable = function() {
@@ -161,9 +151,6 @@ Stacker.prototype.reorder = function() {
 
   if (!active) return;
 
-  function getByOrder(o) {
-    return stack.filter(function(d) { return d.order === o; })[0];
-  }
 
   function swap(current, target) {
     var tmp = current.order;
@@ -179,7 +166,7 @@ Stacker.prototype.reorder = function() {
   if (active.dy < 0) { // Moving up
     var checkId = active.order - 1;
     if (checkId < 0) return;
-    var target = getByOrder(checkId);
+    var target = _this.getByOrder(checkId);
     var targetHeight = target.weight * _this.baseHeight;
 
     if (active.sy + active.dy > target.sy + 0.5*targetHeight) return;
@@ -187,12 +174,10 @@ Stacker.prototype.reorder = function() {
   } else { // Moving down
     var checkId = active.order + 1;
     if (checkId >= this.stack.length) return;
-    var target = getByOrder(checkId);
+    var target = _this.getByOrder(checkId);
     var targetHeight = target.weight * _this.baseHeight;
 
     if (active.sy + active.dy + 0.5*targetHeight < target.sy) return;
     swap(active, target);
   }
-
-
 };
