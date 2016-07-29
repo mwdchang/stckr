@@ -6,8 +6,6 @@
  * - animation
  * - callback for switching order
  * - contaier resize
- * - (config) drag handle
- * - (config) adaptable number of stacks
  */
 function Stacker(element, config) {
   this.element = element;
@@ -18,6 +16,7 @@ function Stacker(element, config) {
   /*** settings ***/
   var config = config || {};
   this.useDragHandle = config.useDragHandle || false;
+  this.weightThreshold = config.weightThreshold || 0;
 
   /*** Helper functions ***/
   this.getById = (id)=> {
@@ -41,7 +40,12 @@ Stacker.prototype.recalc = function() {
     .reduce(function(a, b) { return a+b; });
 
   // Test
-  this.baseHeight = height / Math.min(4, totalWeight);
+  if (this.weightThreshold === 0) {
+    this.baseHeight = height / totalWeight;
+  } else {
+    this.baseHeight = height / this.weightThreshold;
+  }
+  // this.baseHeight = height / Math.min(4, totalWeight);
 
   var start = 0;
 
@@ -54,6 +58,14 @@ Stacker.prototype.recalc = function() {
     }
     start += track.weight * this.baseHeight;
   }
+};
+
+
+Stacker.prototype.setWeightThreshold = function(weightThreshold) {
+  this.disable();
+  this.weightThreshold = weightThreshold || 0;
+  this._bind();
+  this.enable();
 };
 
 /**
@@ -106,6 +118,7 @@ Stacker.prototype._bind = function() {
   var width = this.width();
   this.recalc();
   tracks.data(this.stack)
+    .transition().duration(200)
     .style('top', function(d) { return d.sy; })
     .style('height', function(d) { return d.height; })
     .style('width', width + 'px');

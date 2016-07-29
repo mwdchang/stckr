@@ -53,6 +53,7 @@ button {
   <p>This is a stacked-grid test. Drag each track up/down to swap their positions.</p>
   <button onclick="toggle()" id="btn">Disable Stckr</button>
   <button onclick="addTrack()">Add track</button>
+  <button onclick="toggleFit()" id="fitBtn">Use minimum height</button>
   <div class="stacker">
   </div>
 </body>
@@ -61,11 +62,27 @@ var stacker = new Stacker( d3.select('.stacker'), {
   useDragHandle: true
 });
 stacker.addTrack(1);
+stacker.modifyTrackWeight(1, 2);
 stacker.addTrack(2);
+stacker.modifyTrackWeight(2, 3);
 stacker.addTrack(3);
 stacker.enable();
 
+function fit() { stacker.setWeightThreshold(0); }
+
+function scroll() { stacker.setWeightThreshold(8); }
+
 function addTrack() { stacker.addTrack(); }
+
+function toggleFit() {
+  if (stacker.weightThreshold !== 0) {
+    stacker.setWeightThreshold(0);
+    d3.select('#fitBtn').text('Use minimum height');
+  } else {
+    stacker.setWeightThreshold(7);
+    d3.select('#fitBtn').text('Fit all items');
+  }
+}
 
 function toggle() {
   if (stacker.enabled) {
