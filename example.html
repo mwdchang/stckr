@@ -20,8 +20,9 @@ body {
   position: absolute;
   top: 0;
   height: 100%;
-  width: 2rem;
-  background-color: #CCF;
+  width: 1rem;
+  background-color: #CCD;
+  border-radius: 1px;
 }
 
 .track-handle::before {
@@ -30,9 +31,9 @@ body {
 
 .track {
   box-sizing: border-box;
-  border-bottom: 1px solid #234;
+  border-bottom: 1px solid #EEE;
   text-align: center;
-  background: #987;
+  background: #CBA;
   position: absolute;
   opacity: 0.75;
 }
@@ -56,9 +57,12 @@ button {
   </div>
 </body>
 <script>
-var stacker = new Stacker( d3.select('.stacker'))
+var stacker = new Stacker( d3.select('.stacker'), {
+  useDragHandle: true
+});
 stacker.addTrack(1);
 stacker.addTrack(2);
+stacker.addTrack(3);
 stacker.enable();
 
 function addTrack() { stacker.addTrack(); }
@@ -66,10 +70,10 @@ function addTrack() { stacker.addTrack(); }
 function toggle() {
   if (stacker.enabled) {
     stacker.disable();
-    d3.select('#btn').text('Enable Stckr');
+    d3.select('#btn').text('Enable stckr');
   } else {
     stacker.enable();
-    d3.select('#btn').text('Disable Stckr');
+    d3.select('#btn').text('Disable stckr');
   }
 };
 </script>

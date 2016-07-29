@@ -9,14 +9,15 @@
  * - (config) drag handle
  * - (config) adaptable number of stacks
  */
-function Stacker(element) {
+function Stacker(element, config) {
   this.element = element;
   this.stack = [];
   this.baseHeight = 0;
   this.enabled = false;
 
-  /** Internal state **/
-  this.dragging = false;
+  /*** settings ***/
+  var config = config || {};
+  this.useDragHandle = config.useDragHandle || false;
 
   /*** Helper functions ***/
   this.getById = (id)=> {
@@ -85,7 +86,9 @@ Stacker.prototype.addTrack = function(labelStr) {
   });
 
   var t = this.element.append('div').classed('track', true).text(labelStr || null);
-  t.append('div').classed('track-handle', true);
+  if (this.useDragHandle === true) {
+    t.append('div').classed('track-handle', true);
+  }
 
   this._bind();
   this.enable();
@@ -126,7 +129,7 @@ Stacker.prototype.enable = function() {
   var drag = d3.behavior.drag()
     .on('dragstart', function(d) {
       var target = d3.select(d3.event.sourceEvent.target);
-      if (target.classed('track-handle') !== true) return;
+      if (target.classed('track-handle') !== true && _this.useDragHandle) return;
 
       d.active = true;
       d3.select(this).classed('active-track', true);
