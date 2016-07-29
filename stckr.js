@@ -15,6 +15,9 @@ function Stacker(element) {
   this.baseHeight = 0;
   this.enabled = false;
 
+  /** Internal state **/
+  this.dragging = false;
+
   /*** Helper functions ***/
   this.getById = (id)=> {
     return this.stack.find((t)=> { return t.trackId === id; });
@@ -80,7 +83,10 @@ Stacker.prototype.addTrack = function(labelStr) {
     active: false,
     weight: 1.0
   });
-  this.element.append('div').classed('track', true).text(labelStr || null);
+
+  var t = this.element.append('div').classed('track', true).text(labelStr || null);
+  t.append('div').classed('track-handle', true);
+
   this._bind();
   this.enable();
 };
@@ -119,10 +125,15 @@ Stacker.prototype.enable = function() {
 
   var drag = d3.behavior.drag()
     .on('dragstart', function(d) {
+      var target = d3.select(d3.event.sourceEvent.target);
+      if (target.classed('track-handle') !== true) return;
+
       d.active = true;
       d3.select(this).classed('active-track', true);
     })
     .on('drag', function(d) {
+      if (d.active === false) return;
+
       var ey = d3.event.dy;
       d.dy += ey;
       d3.select(this).style('-webkit-transform', 'translate(' + 0 + 'px,' + d.dy + 'px)')
@@ -130,6 +141,8 @@ Stacker.prototype.enable = function() {
       _this.reorder();
     })
     .on('dragend', function(d) {
+      if (d.active === false) return;
+
       d.dy = 0;
       d.active = false;
       d3.select(this).classed('active-track', false);

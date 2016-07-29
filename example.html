@@ -16,6 +16,18 @@ body {
   overflow-y: auto;
 }
 
+.track-handle {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 2rem;
+  background-color: #CCF;
+}
+
+.track-handle::before {
+  content: '::';
+}
+
 .track {
   box-sizing: border-box;
   border-bottom: 1px solid #234;
