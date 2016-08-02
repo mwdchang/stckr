@@ -17,9 +17,6 @@ button {
 </head>
 <body>
   <p>This is a stacked-grid test. Drag each track up/down to swap their positions.</p>
-  <!--
-  <button onclick="toggle()" id="btn">Disable Stckr</button>
--->
   <button onclick="addTrack()">Add track</button>
   <button onclick="removeTrack()">Remove track</button>
   <button onclick="toggleFit()" id="fitBtn">Use default sizes</button>
@@ -28,7 +25,8 @@ button {
 </body>
 <script>
 var stacker = new Stacker( d3.select('.stacker'), {
-  useDragHandle: true
+  useDragHandle: true,
+  dragEndFn: function() { console.log(stacker.stack.map(function(s){return s.order;})); }
 });
 var c = 0;
 stacker.addTrack(++c);
@@ -48,7 +46,6 @@ function removeTrack() {
   stacker.removeTrack( stacker.getByOrder(0).trackId );
 }
 
-
 function toggleFit() {
   if (stacker.weightThreshold !== 0) {
     stacker.setWeightThreshold(0);
@@ -59,16 +56,5 @@ function toggleFit() {
   }
 }
 
-/*
-function toggle() {
-  if (stacker.enabled) {
-    stacker.disable();
-    d3.select('#btn').text('Enable stckr');
-  } else {
-    stacker.enable();
-    d3.select('#btn').text('Disable stckr');
-  }
-};
-*/
 </script>
 </html>

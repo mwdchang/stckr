@@ -3,7 +3,6 @@
  * interactions
  *
  * TODO:
- * - animation
  * - callback for switching order
  * - contaier resize
  */
@@ -13,10 +12,11 @@ function Stacker(element, config) {
   this.baseHeight = 0;
   this.enabled = false;
 
-  /*** settings ***/
+  /*** configuration settings ***/
   var config = config || {};
   this.useDragHandle = config.useDragHandle || false;
   this.weightThreshold = config.weightThreshold || 0;
+  this.dragEndFn = config.dragEndFn || function(){};
 
   /*** Helper functions ***/
   this.getById = (id)=> {
@@ -43,17 +43,14 @@ Stacker.prototype.recalc = function() {
     .map(function(t) { return t.weight; })
     .reduce(function(a, b) { return a+b; });
 
-  // Test
   if (this.weightThreshold === 0) {
     this.baseHeight = height / totalWeight;
   } else {
     this.baseHeight = height / this.weightThreshold;
   }
-  // this.baseHeight = height / Math.min(4, totalWeight);
 
-  var start = 0;
+  var start = parseFloat(this.element.style('padding-top')) || 0;
 
-  var start = 0;
   for (var i=0; i < this.stack.length; ++i) {
     var track = this.stack.filter(function(t) { return t.order === i; })[0];
     track.height = track.weight * this.baseHeight;
@@ -112,10 +109,10 @@ Stacker.prototype.addTrack = function(labelStr) {
 
 
 Stacker.prototype.removeTrack = function(id) {
+  if (this.stack.length <= 1) return;
   this.disable();
 
   var toRemove = this.element.selectAll('.track').filter((t)=>{return t.trackId === id;});
-  console.log(toRemove.datum());
 
   this.stack.forEach(function(s) {
     if (s.order > toRemove.datum().order) s.order --;
@@ -124,9 +121,7 @@ Stacker.prototype.removeTrack = function(id) {
 
   var idx = this.getIndex(id);
 
-  console.log(this.stack.map((s)=>{return s.order;}));
   this.stack.splice(idx, 1);
-  console.log(this.stack.map((s)=>{return s.order;}));
   this._bind();
   this.enable();
 };
@@ -192,6 +187,7 @@ Stacker.prototype.enable = function() {
 
       _this.recalc();
       _this.element.selectAll('.track').style('top', function(d) { return d.sy; });
+      _this.dragEndFn();
     })
   tracks.call(drag);
   this.enabled = true;

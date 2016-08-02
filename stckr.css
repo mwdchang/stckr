@@ -2,6 +2,7 @@
   width: 400px;
   height: 300px;
   background-color: #EEE;
+  padding: 5px;
   position: relative;
   overflow-y: auto;
 }
@@ -15,6 +16,7 @@
   border-radius: 1px;
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
+  cursor: move;
 }
 
 .track-handle::before {
@@ -25,7 +27,7 @@
   box-sizing: border-box;
   border-bottom: 1px solid #EEE;
   text-align: center;
-  background: #CBA;
+  background: #DDCACA;
   position: absolute;
   opacity: 0.75;
   border-radius: 4px;
