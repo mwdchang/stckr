@@ -25,6 +25,10 @@ function Stacker(element, config) {
   this.getByOrder = (i)=> {
     return this.stack.find((t)=> { return t.order === i; });
   };
+  this.getIndex = (id) => {
+    return this.stack.findIndex((t)=> { return t.trackId === id; });
+  }
+
   this.height = ()=> { return parseInt(this.element.style('height'), 10); };
   this.width = ()=> { return parseInt(this.element.style('width'), 10); };
 }
@@ -106,7 +110,25 @@ Stacker.prototype.addTrack = function(labelStr) {
   this.enable();
 };
 
+
 Stacker.prototype.removeTrack = function(id) {
+  this.disable();
+
+  var toRemove = this.element.selectAll('.track').filter((t)=>{return t.trackId === id;});
+  console.log(toRemove.datum());
+
+  this.stack.forEach(function(s) {
+    if (s.order > toRemove.datum().order) s.order --;
+  });
+  toRemove.remove();
+
+  var idx = this.getIndex(id);
+
+  console.log(this.stack.map((s)=>{return s.order;}));
+  this.stack.splice(idx, 1);
+  console.log(this.stack.map((s)=>{return s.order;}));
+  this._bind();
+  this.enable();
 };
 
 
@@ -117,11 +139,14 @@ Stacker.prototype._bind = function() {
   var tracks = this.element.selectAll('.track');
   var width = this.width();
   this.recalc();
+
   tracks.data(this.stack)
-    .transition().duration(200)
+
+  tracks.data(this.stack)
+    .style('width', width + 'px')
+    .transition().duration(800)
     .style('top', function(d) { return d.sy; })
-    .style('height', function(d) { return d.height; })
-    .style('width', width + 'px');
+    .style('height', function(d) { return d.height; });
 };
 
 
