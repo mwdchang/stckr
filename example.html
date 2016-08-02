@@ -2,51 +2,17 @@
 <head>
 <script src="d3.min.js"></script>
 <script src="stckr.js"></script>
+<link rel="stylesheet" href="stckr.css">
 <style>
 body {
   margin: 1rem;
   font-family: Tahoma;
 }
 
-.stacker {
-  width: 400px;
-  height: 300px;
-  background-color: #EEE;
-  position: relative;
-  overflow-y: auto;
-}
-
-.track-handle {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  width: 1rem;
-  background-color: #CCD;
-  border-radius: 1px;
-}
-
-.track-handle::before {
-  content: '::';
-}
-
-.track {
-  box-sizing: border-box;
-  border-bottom: 1px solid #EEE;
-  text-align: center;
-  background: #CBA;
-  position: absolute;
-  opacity: 0.75;
-}
-
-.active-track {
-  background-color: #F80;
-}
-
 button {
   padding: 0.25rem;
   margin: 0.25rem;
 }
-
 </style>
 </head>
 <body>
@@ -66,9 +32,9 @@ var stacker = new Stacker( d3.select('.stacker'), {
 });
 var c = 0;
 stacker.addTrack(++c);
-stacker.modifyTrackWeight(1, 2);
+stacker.modifyTrackWeight(1, 1.4);
 stacker.addTrack(++c);
-stacker.modifyTrackWeight(2, 3);
+stacker.modifyTrackWeight(2, 1.8);
 stacker.addTrack(++c);
 stacker.enable();
 
