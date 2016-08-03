@@ -20,38 +20,40 @@ button {
   <button onclick="addTrack()">Add track</button>
   <button onclick="removeTrack()">Remove track</button>
   <button onclick="toggleFit()" id="fitBtn">Use default sizes</button>
-  <div class="stacker">
+  <div class="stckr">
   </div>
 </body>
 <script>
-var stacker = new Stacker( d3.select('.stacker'), {
+var stckr = new Stckr( d3.select('.stckr'), {
   useDragHandle: true,
-  dragEndFn: function() { console.log(stacker.stack.map(function(s){return s.order;})); }
+  dragEndFn: function() { console.log(stckr.stack.map(function(s){return s.order;})); }
 });
 var c = 0;
-stacker.addTrack(++c);
-stacker.modifyTrackWeight(1, 1.4);
-stacker.addTrack(++c);
-stacker.modifyTrackWeight(2, 1.8);
-stacker.addTrack(++c);
-stacker.enable();
+stckr.addTrack(++c);
+stckr.modifyTrackWeight(1, 1.4);
+stckr.addTrack(++c);
+stckr.modifyTrackWeight(2, 1.8);
+stckr.addTrack(++c);
+stckr.addTrack(++c);
+stckr.addTrack(++c);
+stckr.enable();
 
-function fit() { stacker.setWeightThreshold(0); }
+function fit() { stckr.setWeightThreshold(0); }
 
-function scroll() { stacker.setWeightThreshold(8); }
+function scroll() { stckr.setWeightThreshold(8); }
 
-function addTrack() { stacker.addTrack(++c); }
+function addTrack() { stckr.addTrack(++c); }
 
 function removeTrack() {
-  stacker.removeTrack( stacker.getByOrder(0).trackId );
+  stckr.removeTrack( stckr.getByOrder(0).trackId );
 }
 
 function toggleFit() {
-  if (stacker.weightThreshold !== 0) {
-    stacker.setWeightThreshold(0);
+  if (stckr.weightThreshold !== 0) {
+    stckr.setWeightThreshold(0);
     d3.select('#fitBtn').text('Use default sizes');
   } else {
-    stacker.setWeightThreshold(7);
+    stckr.setWeightThreshold(7);
     d3.select('#fitBtn').text('Fit all items');
   }
 }

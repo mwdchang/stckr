@@ -6,7 +6,7 @@
  * - callback for switching order
  * - contaier resize
  */
-function Stacker(element, config) {
+function Stckr(element, config) {
   this.element = element;
   this.stack = [];
   this.baseHeight = 0;
@@ -37,7 +37,7 @@ function Stacker(element, config) {
 /**
  * Recalulcate the next position
  */
-Stacker.prototype.recalc = function() {
+Stckr.prototype.recalc = function() {
   var height = this.height();
   var totalWeight = this.stack
     .map(function(t) { return t.weight; })
@@ -62,7 +62,7 @@ Stacker.prototype.recalc = function() {
 };
 
 
-Stacker.prototype.setWeightThreshold = function(weightThreshold) {
+Stckr.prototype.setWeightThreshold = function(weightThreshold) {
   this.disable();
   this.weightThreshold = weightThreshold || 0;
   this._bind();
@@ -72,7 +72,7 @@ Stacker.prototype.setWeightThreshold = function(weightThreshold) {
 /**
  * Modify the weight of a single track by track id
  */
-Stacker.prototype.modifyTrackWeight = function(id, weight) {
+Stckr.prototype.modifyTrackWeight = function(id, weight) {
   this.disable();
   let stack = this.getById(id);
   stack.weight = weight;
@@ -82,7 +82,7 @@ Stacker.prototype.modifyTrackWeight = function(id, weight) {
 
 /**
  * Add a new track to the bottom of the stack*/
-Stacker.prototype.addTrack = function(labelStr) {
+Stckr.prototype.addTrack = function(labelStr) {
   this.disable();
   var maxId = 0;
   for (var i=0; i < this.stack.length; i++) {
@@ -108,7 +108,7 @@ Stacker.prototype.addTrack = function(labelStr) {
 };
 
 
-Stacker.prototype.removeTrack = function(id) {
+Stckr.prototype.removeTrack = function(id) {
   if (this.stack.length <= 1) return;
   this.disable();
 
@@ -130,7 +130,7 @@ Stacker.prototype.removeTrack = function(id) {
 /**
  * Rebinds the stack data structure to the DOM
  */
-Stacker.prototype._bind = function() {
+Stckr.prototype._bind = function() {
   var tracks = this.element.selectAll('.track');
   var width = this.width();
   this.recalc();
@@ -145,7 +145,7 @@ Stacker.prototype._bind = function() {
 };
 
 
-Stacker.prototype.disable = function() {
+Stckr.prototype.disable = function() {
   var tracks = this.element.selectAll('.track');
   var cancelFn = d3.behavior.drag()
     .on('dragstart', null)
@@ -155,7 +155,7 @@ Stacker.prototype.disable = function() {
   this.enabled = false;
 }
 
-Stacker.prototype.enable = function() {
+Stckr.prototype.enable = function() {
   var tracks = this.element.selectAll('.track');
   var _this = this;
 
@@ -172,6 +172,8 @@ Stacker.prototype.enable = function() {
 
       var ey = d3.event.dy;
       d.dy += ey;
+      d.direction = ey;
+
       d3.select(this).style('-webkit-transform', 'translate(' + 0 + 'px,' + d.dy + 'px)')
         .style('z-index', 10);
       _this.reorder();
@@ -180,6 +182,8 @@ Stacker.prototype.enable = function() {
       if (d.active === false) return;
 
       d.dy = 0;
+      d.direction = 0;
+
       d.active = false;
       d3.select(this).classed('active-track', false);
       d3.select(this).style('-webkit-transform', 'translate(' + 0 + 'px,' + d.dy + 'px)')
@@ -194,7 +198,7 @@ Stacker.prototype.enable = function() {
 };
 
 
-Stacker.prototype.reorder = function() {
+Stckr.prototype.reorder = function() {
   var active = this.element.select('.active-track').datum();
   var stack = this.stack;
   var _this = this;
@@ -210,10 +214,12 @@ Stacker.prototype.reorder = function() {
     _this.element.selectAll('.track')
       .filter(function(d) { return d.trackId !== current.trackId; })
       .style('top', function(d) { return d.sy; });
+    current.direction = 0;
   }
 
 
-  if (active.dy < 0) { // Moving up
+
+  if (active.direction < 0) { // Moving up
     var checkId = active.order - 1;
     if (checkId < 0) return;
     var target = _this.getByOrder(checkId);
