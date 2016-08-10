@@ -51,14 +51,16 @@ Stckr.prototype.recalc = function() {
 
   var start = parseFloat(this.element.style('padding-top')) || 0;
 
-  for (var i=0; i < this.stack.length; ++i) {
-    var track = this.stack.filter(function(t) { return t.order === i; })[0];
+
+  this.stack.map(d=>d.order).sort((a, b)=>{return a - b;}).forEach((d) => {
+    var track = this.stack.filter(function(t) { return t.order === d; })[0];
     track.height = track.weight * this.baseHeight;
     if (track.active === false) {
       track.sy = start;
     }
     start += track.weight * this.baseHeight;
-  }
+  });
+
 };
 
 
@@ -80,11 +82,26 @@ Stckr.prototype.modifyTrackWeight = function(id, weight) {
   this.enable();
 };
 
+
+/**
+ * Reassign the stacking orders
+ */
+Stckr.prototype.modifyOrders = function(orders) {
+  var _this = this;
+  _this.disable();
+  orders.forEach(function(o) {
+    _this.getById(o.trackId).order = o.order;
+    console.log(o.trackId, o.order);
+  })
+  _this._bind();
+  _this.enable();
+};
+
 /**
  * Add a new track to the bottom of the stack*/
 Stckr.prototype.addTrack = function(labelStr) {
   this.disable();
-  var maxId = 0;
+  var maxId = -1;
   for (var i=0; i < this.stack.length; i++) {
     if (this.stack[i].trackId > maxId) {
       maxId = this.stack[i].trackId;

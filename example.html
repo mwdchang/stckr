@@ -20,22 +20,27 @@ button {
   <button onclick="addTrack()">Add track</button>
   <button onclick="removeTrack()">Remove track</button>
   <button onclick="toggleFit()" id="fitBtn">Use default sizes</button>
+  <button onclick="random()">Randomize</button>
+  <button onclick="orderById()">By Id</button>
   <div class="stckr">
   </div>
 </body>
 <script>
 var stckr = new Stckr( d3.select('.stckr'), {
-  useDragHandle: true,
+  // useDragHandle: true,
   dragEndFn: function() { console.log(stckr.stack.map(function(s){return s.order;})); }
 });
 var c = 0;
 stckr.addTrack(++c);
-stckr.modifyTrackWeight(1, 1.4);
+stckr.modifyTrackWeight(0, 2);
 stckr.addTrack(++c);
-stckr.modifyTrackWeight(2, 1.8);
+stckr.modifyTrackWeight(1, 1);
 stckr.addTrack(++c);
+stckr.modifyTrackWeight(2, 2);
 stckr.addTrack(++c);
+stckr.modifyTrackWeight(3, 1);
 stckr.addTrack(++c);
+stckr.modifyTrackWeight(4, 2);
 stckr.enable();
 
 function fit() { stckr.setWeightThreshold(0); }
@@ -43,6 +48,28 @@ function fit() { stckr.setWeightThreshold(0); }
 function scroll() { stckr.setWeightThreshold(8); }
 
 function addTrack() { stckr.addTrack(++c); }
+
+function random() {
+  var orders = stckr.stack.map( function(d) { return { trackId: d.trackId, order: d.order}; })
+
+  for (var i=0; i < 10; i++) {
+    var a = Math.floor(Math.random()*(stckr.stack.length-1));
+    var b = Math.floor(Math.random()*(stckr.stack.length-1));
+    console.log(a, b);
+    var t = orders[a].order
+    orders[a].order = orders[b].order;
+    orders[b].order = t;
+  }
+  stckr.modifyOrders(orders);
+}
+
+
+function orderById() {
+  var orders = stckr.stack
+    .map( function(d) { return { trackId: d.trackId, order: d.trackId}; });
+  console.log(orders);
+  stckr.modifyOrders(orders);
+}
 
 function removeTrack() {
   stckr.removeTrack( stckr.getByOrder(0).trackId );
