@@ -3,6 +3,7 @@ A flexible, drag-and-drop enabled stack widget. stckr is API driven, with the go
 
 ![](stckr.gif)
 
+[example](http://bl.ocks.org/mwdchang/7f4798fe392949595bb1b963060eded5/bed637c386a229f28aa81fd7cd66524db1e5f716)
 
 ## Basic Usage
 ```
