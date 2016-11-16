@@ -42,7 +42,7 @@ Stckr.prototype.recalc = function() {
   var totalWeight = 1;
   
   if (this.stack.length > 0) {
-    totalweight = this.stack
+    totalWeight = this.stack
       .map(function(t) { return t.weight; })
       .reduce(function(a, b) { return a+b; });
   }
