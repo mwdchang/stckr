@@ -39,10 +39,14 @@ function Stckr(element, config) {
  */
 Stckr.prototype.recalc = function() {
   var height = this.height();
-  var totalWeight = this.stack
-    .map(function(t) { return t.weight; })
-    .reduce(function(a, b) { return a+b; });
-
+  var totalWeight = 1;
+  
+  if (this.stack.length > 0) {
+    totalweight = this.stack
+      .map(function(t) { return t.weight; })
+      .reduce(function(a, b) { return a+b; });
+  }
+    
   if (this.weightThreshold === 0) {
     this.baseHeight = height / totalWeight;
   } else {
@@ -126,7 +130,7 @@ Stckr.prototype.addTrack = function(labelStr) {
 
 
 Stckr.prototype.removeTrack = function(id) {
-  if (this.stack.length <= 1) return;
+  if (this.stack.length <= 0) return;
   this.disable();
 
   var toRemove = this.element.selectAll('.track').filter((t)=>{return t.trackId === id;});
